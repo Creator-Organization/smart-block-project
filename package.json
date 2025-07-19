@@ -2,17 +2,35 @@
   "name": "smart-block-project",
   "version": "0.1.0",
   "private": true,
+  "description": "A visual link management system with colorful blocks organized in a grid. Built with Next.js, TypeScript, and Neon Serverless PostgreSQL.",
+  "keywords": [
+    "nextjs",
+    "typescript",
+    "postgresql",
+    "neon",
+    "bookmark-manager",
+    "dashboard"
+  ],
+  "author": "Smart Block Team",
+  "license": "MIT",
   "scripts": {
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "lint:fix": "next lint --fix",
+    "type-check": "tsc --noEmit",
+    "db:seed": "node database/seed.js",
+    "db:schema": "echo 'Run schema.sql in Neon SQL Editor'",
+    "test": "echo \"No tests specified\" && exit 0",
+    "clean": "rm -rf .next out dist"
   },
   "dependencies": {
-    "next": "14.0.0",
+    "@neondatabase/serverless": "^0.6.0",
+    "dotenv": "^17.2.0",
+    "next": "^14.2.30",
     "react": "^18",
     "react-dom": "^18",
-    "@neondatabase/serverless": "^0.6.0",
     "zod": "^3.22.4"
   },
   "devDependencies": {
@@ -25,5 +43,17 @@
     "postcss": "^8",
     "tailwindcss": "^3.3.0",
     "typescript": "^5"
-  }
+  },
+  "engines": {
+    "node": ">=18.0.0",
+    "npm": ">=8.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Creator-Organization/smart-block-project.git"
+  },
+  "bugs": {
+    "url": "https://github.com/Creator-Organization/smart-block-project/issues"
+  },
+  "homepage": "https://github.com/Creator-Organization/smart-block-project#readme"
 }
