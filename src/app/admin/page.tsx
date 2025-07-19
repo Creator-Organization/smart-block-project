@@ -34,6 +34,13 @@ export default function AdminPage() {
     await deleteBlock(id);
   };
 
+  // Handle block reordering
+  const handleReorder = async (reorderedBlocks: Block[]) => {
+    // Update local state optimistically
+    // The actual API call will be handled by the drag & drop hook
+    console.log('Blocks reordered:', reorderedBlocks.map(b => b.title));
+  };
+
   // Handle add block
   const handleAddBlock = async (data: CreateBlockRequest) => {
     const result = await createBlock(data);
@@ -92,13 +99,15 @@ export default function AdminPage() {
           totalBlocks={totalBlocks}
           onAddNew={() => setShowAddModal(true)}
         >
-          {/* Block Grid in Admin Mode */}
+          {/* Block Grid in Admin Mode with Drag & Drop */}
           <BlockGrid
             blocks={blocks}
             loading={loading}
             isAdminMode={true}
             onEdit={handleEdit}
             onDelete={handleDelete}
+            onReorder={handleReorder}
+            enableDragDrop={true}
           />
         </AdminPanel>
       </main>

@@ -1,37 +1,17 @@
 /**
- * Main Homepage - Smart Block Project
- * Display blocks in a grid with search and filtering
+ * Main Homepage - Smart Block Project Enhanced
+ * Display blocks with advanced search and filtering
  */
 
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { useBlocks } from '@/hooks/useBlocks';
 import BlockGrid from '@/components/blocks/BlockGrid';
-import { Settings, Search, Sparkles } from 'lucide-react';
+import { Settings, Sparkles } from 'lucide-react';
 
 export default function HomePage() {
-  const { blocks, loading, error, searchBlocks, fetchBlocks } = useBlocks();
-  const [searchTerm, setSearchTerm] = useState('');
-  const [selectedCategory, setSelectedCategory] = useState('All');
-
-  // Handle search
-  const handleSearchChange = (term: string) => {
-    setSearchTerm(term);
-    if (term.trim()) {
-      searchBlocks(term);
-    } else {
-      fetchBlocks(selectedCategory === 'All' ? undefined : selectedCategory);
-    }
-  };
-
-  // Handle category change
-  const handleCategoryChange = (category: string) => {
-    setSelectedCategory(category);
-    setSearchTerm('');
-    fetchBlocks(category === 'All' ? undefined : category);
-  };
+  const { blocks, loading, error } = useBlocks();
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 via-white to-purple-50">
@@ -98,14 +78,11 @@ export default function HomePage() {
           </div>
         )}
 
-        {/* Block Grid */}
+        {/* Block Grid with Enhanced Features */}
         <BlockGrid
           blocks={blocks}
           loading={loading}
-          searchTerm={searchTerm}
-          onSearchChange={handleSearchChange}
-          selectedCategory={selectedCategory}
-          onCategoryChange={handleCategoryChange}
+          isAdminMode={false}
         />
       </main>
 
