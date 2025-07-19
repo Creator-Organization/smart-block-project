@@ -39,6 +39,9 @@ export interface ApiResponse<T> {
 export interface BlocksResponse {
   blocks: Block[];
   total: number;
+  limit?: number;
+  offset?: number;
+  hasMore?: boolean;
 }
 
 export type Category = 
