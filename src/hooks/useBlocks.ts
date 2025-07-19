@@ -58,10 +58,23 @@ export function useBlocks(): UseBlocksReturn {
   }, []);
 
   /**
-   * Create a new block
+   * Create a new block with optimistic updates
    */
   const createBlock = useCallback(async (blockData: CreateBlockRequest): Promise<Block | null> => {
     setError(null);
+
+    // Optimistic update - add temporary block
+    const tempId = Date.now();
+    const optimisticBlock: Block = {
+      id: tempId,
+      ...blockData,
+      description: blockData.description || null,
+      created_at: new Date(),
+      updated_at: new Date(),
+    };
+
+    setBlocks(prev => [optimisticBlock, ...prev]);
+    setTotalBlocks(prev => prev + 1);
 
     try {
       const response = await fetch('/api/blocks', {
@@ -79,13 +92,19 @@ export function useBlocks(): UseBlocksReturn {
       }
 
       if (data.success && data.data) {
-        setBlocks(prev => [data.data!, ...prev]);
-        setTotalBlocks(prev => prev + 1);
+        // Replace optimistic block with real block
+        setBlocks(prev => 
+          prev.map(block => block.id === tempId ? data.data! : block)
+        );
         return data.data;
       }
 
       return null;
     } catch (err) {
+      // Revert optimistic update on error
+      setBlocks(prev => prev.filter(block => block.id !== tempId));
+      setTotalBlocks(prev => prev - 1);
+      
       const errorMessage = formatApiError(err);
       setError(errorMessage);
       console.error('Error creating block:', err);
