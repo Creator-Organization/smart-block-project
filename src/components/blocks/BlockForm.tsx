@@ -1,14 +1,13 @@
 /**
- * BlockForm component - Form for creating and editing blocks
- * Handles form validation and submission
+ * BlockForm component - Enhanced with dark mode support
+ * Form for creating and editing blocks
  */
 
 'use client';
 
 import { useState, useEffect } from 'react';
-import { Block, CreateBlockRequest, UpdateBlockRequest } from '@/lib/types';
-import { isValidUrl } from '@/lib/utils';
-import { Save, X, Loader2 } from 'lucide-react';
+import { Block, CreateBlockRequest } from '@/lib/types';
+import { Save, X, Loader2, Link2 } from 'lucide-react';
 
 interface BlockFormProps {
   block?: Block | null;
@@ -28,14 +27,14 @@ const CATEGORIES = [
 ];
 
 const COLORS = [
-  'bg-red-500',
-  'bg-blue-500',
-  'bg-green-500',
-  'bg-yellow-500',
-  'bg-purple-500',
-  'bg-orange-500',
-  'bg-pink-500',
-  'bg-indigo-500'
+  { name: 'Red', value: 'bg-red-500', color: '#ef4444' },
+  { name: 'Blue', value: 'bg-blue-500', color: '#3b82f6' },
+  { name: 'Green', value: 'bg-green-500', color: '#22c55e' },
+  { name: 'Yellow', value: 'bg-yellow-500', color: '#eab308' },
+  { name: 'Purple', value: 'bg-purple-500', color: '#9333ea' },
+  { name: 'Orange', value: 'bg-orange-500', color: '#f97316' },
+  { name: 'Pink', value: 'bg-pink-500', color: '#ec4899' },
+  { name: 'Indigo', value: 'bg-indigo-500', color: '#6366f1' }
 ];
 
 export default function BlockForm({ 
@@ -66,6 +65,16 @@ export default function BlockForm({
       });
     }
   }, [block]);
+
+  // Helper function to validate URL
+  const isValidUrl = (url: string): boolean => {
+    try {
+      new URL(url);
+      return true;
+    } catch {
+      return false;
+    }
+  };
 
   // Validate form
   const validateForm = (): boolean => {
@@ -98,7 +107,6 @@ export default function BlockForm({
     if (!validateForm()) return;
 
     try {
-      // Always send as CreateBlockRequest format - the modals will handle the conversion
       const submitData: CreateBlockRequest = {
         title: formData.title.trim(),
         description: formData.description.trim() || undefined,
@@ -113,112 +121,134 @@ export default function BlockForm({
     }
   };
 
-  // Handle input changes
-  const handleChange = (field: string, value: string) => {
-    setFormData(prev => ({ ...prev, [field]: value }));
-    
-    // Clear error when user starts typing
-    if (errors[field]) {
-      setErrors(prev => ({ ...prev, [field]: '' }));
-    }
-  };
-
   return (
-    <form onSubmit={handleSubmit} className="space-y-6">
-      {/* Title */}
+    <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Title Field */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          Title *
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          Title <span className="text-red-500">*</span>
         </label>
         <input
           type="text"
           value={formData.title}
-          onChange={(e) => handleChange('title', e.target.value)}
+          onChange={(e) => setFormData({ ...formData, title: e.target.value })}
           className={`
-            w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none
-            ${errors.title ? 'border-red-500' : 'border-gray-300'}
+            w-full px-4 py-2 rounded-lg
+            bg-gray-50 dark:bg-gray-700
+            border-2 ${errors.title ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+            text-gray-900 dark:text-white
+            placeholder-gray-500 dark:placeholder-gray-400
+            focus:outline-none focus:border-amber-500 dark:focus:border-amber-400
+            transition-colors
           `}
           placeholder="Enter block title"
           disabled={loading}
         />
         {errors.title && (
-          <p className="mt-1 text-sm text-red-600">{errors.title}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.title}</p>
         )}
       </div>
 
-      {/* Description */}
+      {/* Description Field */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Description
         </label>
         <textarea
           value={formData.description}
-          onChange={(e) => handleChange('description', e.target.value)}
-          rows={3}
+          onChange={(e) => setFormData({ ...formData, description: e.target.value })}
           className={`
-            w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none resize-none
-            ${errors.description ? 'border-red-500' : 'border-gray-300'}
+            w-full px-4 py-2 rounded-lg
+            bg-gray-50 dark:bg-gray-700
+            border-2 ${errors.description ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+            text-gray-900 dark:text-white
+            placeholder-gray-500 dark:placeholder-gray-400
+            focus:outline-none focus:border-amber-500 dark:focus:border-amber-400
+            transition-colors
+            resize-none
           `}
           placeholder="Enter block description (optional)"
+          rows={3}
           disabled={loading}
         />
         {errors.description && (
-          <p className="mt-1 text-sm text-red-600">{errors.description}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.description}</p>
         )}
       </div>
 
-      {/* URL */}
+      {/* URL Field */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
-          URL *
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
+          URL <span className="text-red-500">*</span>
         </label>
-        <input
-          type="url"
-          value={formData.url}
-          onChange={(e) => handleChange('url', e.target.value)}
-          className={`
-            w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none
-            ${errors.url ? 'border-red-500' : 'border-gray-300'}
-          `}
-          placeholder="https://example.com"
-          disabled={loading}
-        />
+        <div className="relative">
+          <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+            <Link2 className="h-5 w-5 text-gray-400" />
+          </div>
+          <input
+            type="url"
+            value={formData.url}
+            onChange={(e) => setFormData({ ...formData, url: e.target.value })}
+            className={`
+              w-full pl-10 pr-4 py-2 rounded-lg
+              bg-gray-50 dark:bg-gray-700
+              border-2 ${errors.url ? 'border-red-500' : 'border-gray-300 dark:border-gray-600'}
+              text-gray-900 dark:text-white
+              placeholder-gray-500 dark:placeholder-gray-400
+              focus:outline-none focus:border-amber-500 dark:focus:border-amber-400
+              transition-colors
+            `}
+            placeholder="https://example.com"
+            disabled={loading}
+          />
+        </div>
         {errors.url && (
-          <p className="mt-1 text-sm text-red-600">{errors.url}</p>
+          <p className="mt-1 text-sm text-red-600 dark:text-red-400">{errors.url}</p>
         )}
       </div>
 
-      {/* Color */}
+      {/* Color Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
           Color
         </label>
         <div className="flex flex-wrap gap-2">
-          {COLORS.map((color) => (
+          {COLORS.map((colorOption) => (
             <button
-              key={color}
+              key={colorOption.value}
               type="button"
-              onClick={() => handleChange('color', color)}
+              onClick={() => setFormData({ ...formData, color: colorOption.value })}
               className={`
-                w-8 h-8 rounded-full ${color} border-2 transition-all
-                ${formData.color === color ? 'border-gray-900 scale-110' : 'border-gray-300'}
+                w-10 h-10 rounded-lg transition-all
+                ${formData.color === colorOption.value 
+                  ? 'ring-2 ring-offset-2 ring-amber-500 dark:ring-offset-gray-800' 
+                  : 'hover:scale-110'
+                }
               `}
+              style={{ backgroundColor: colorOption.color }}
               disabled={loading}
-              title={color}
+              aria-label={colorOption.name}
             />
           ))}
         </div>
       </div>
 
-      {/* Category */}
+      {/* Category Selection */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
           Category
         </label>
         <select
           value={formData.category}
-          onChange={(e) => handleChange('category', e.target.value)}
-          className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none"
+          onChange={(e) => setFormData({ ...formData, category: e.target.value })}
+          className={`
+            w-full px-4 py-2 rounded-lg
+            bg-gray-50 dark:bg-gray-700
+            border-2 border-gray-300 dark:border-gray-600
+            text-gray-900 dark:text-white
+            focus:outline-none focus:border-amber-500 dark:focus:border-amber-400
+            transition-colors
+          `}
           disabled={loading}
         >
           {CATEGORIES.map((category) => (
@@ -229,29 +259,28 @@ export default function BlockForm({
         </select>
       </div>
 
-      {/* Action Buttons */}
-      <div className="flex space-x-3 pt-4">
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex-1 flex items-center justify-center px-4 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
-        >
-          {loading ? (
-            <Loader2 className="h-4 w-4 animate-spin mr-2" />
-          ) : (
-            <Save className="h-4 w-4 mr-2" />
-          )}
-          {block ? 'Update Block' : 'Create Block'}
-        </button>
-        
+      {/* Form Actions */}
+      <div className="flex justify-end space-x-3 pt-4">
         <button
           type="button"
           onClick={onCancel}
+          className="px-4 py-2 text-gray-700 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors interactive-scale"
           disabled={loading}
-          className="flex items-center justify-center px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors disabled:opacity-50"
         >
-          <X className="h-4 w-4 mr-2" />
+          <X className="h-4 w-4 inline mr-2" />
           Cancel
+        </button>
+        <button
+          type="submit"
+          className="px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors shadow-md interactive-scale disabled:opacity-50 disabled:cursor-not-allowed"
+          disabled={loading}
+        >
+          {loading ? (
+            <Loader2 className="h-4 w-4 inline mr-2 animate-spin" />
+          ) : (
+            <Save className="h-4 w-4 inline mr-2" />
+          )}
+          {block ? 'Update Block' : 'Create Block'}
         </button>
       </div>
     </form>
