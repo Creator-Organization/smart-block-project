@@ -1,5 +1,5 @@
 /**
- * BlockGrid component - Polished version with fixed search bar
+ * BlockGrid component - Updated with 2 columns layout
  * Handles responsive grid display, filtering, and reordering
  */
 
@@ -8,6 +8,7 @@
 import { useState, useEffect, useRef } from 'react';
 import { Block } from '@/lib/types';
 import { useSearch } from '@/hooks/useSearch';
+import { useTheme } from '@/components/ui/ThemeProvider';
 import BlockCard from './BlockCard';
 import DragDropGrid from './DragDropGrid';
 import { Loader2, Search, Grid3X3, X, History, Filter } from 'lucide-react';
@@ -44,6 +45,7 @@ export default function BlockGrid({
 }: BlockGridProps) {
   const [showSearchHistory, setShowSearchHistory] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
+  const { theme } = useTheme();
 
   // Use advanced search hook
   const {
@@ -166,7 +168,8 @@ export default function BlockGrid({
             </span>
             <button
               onClick={clearSearch}
-              className="text-amber-600 hover:text-amber-700 dark:text-amber-400 dark:hover:text-amber-300 font-medium interactive-scale"
+              className="font-medium interactive-scale"
+              style={{ color: theme.accent }}
             >
               Clear filters
             </button>
@@ -177,7 +180,7 @@ export default function BlockGrid({
       {/* Loading State */}
       {loading && (
         <div className="flex items-center justify-center py-12">
-          <Loader2 className="h-8 w-8 animate-spin text-amber-500" />
+          <Loader2 className="h-8 w-8 animate-spin" style={{ color: theme.accent }} />
           <span className="ml-2 text-gray-600 dark:text-gray-400">Loading blocks...</span>
         </div>
       )}
@@ -198,7 +201,8 @@ export default function BlockGrid({
           {hasActiveFilters && (
             <button
               onClick={clearSearch}
-              className="btn-3d px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors interactive-scale"
+              className="px-4 py-2 text-white rounded-lg transition-colors interactive-scale"
+              style={{ backgroundColor: theme.accent }}
             >
               Clear filters
             </button>
@@ -206,7 +210,7 @@ export default function BlockGrid({
         </div>
       )}
 
-      {/* Blocks Grid */}
+      {/* Blocks Grid - UPDATED TO 2 COLUMNS */}
       {!loading && filteredBlocks.length > 0 && (
         <>
           {enableDragDrop && isAdminMode ? (
@@ -218,7 +222,7 @@ export default function BlockGrid({
               onReorder={handleReorder}
             />
           ) : (
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-5xl mx-auto">
               {filteredBlocks.map((block, index) => (
                 <div
                   key={block.id}

@@ -1,27 +1,33 @@
 /**
- * Main Homepage - Smart Block Project Final Polished Version
- * With improved colors and fixed search bar
+ * Main Homepage - Smart Block Project with Theme Support
+ * Includes theme selector and dynamic colors
  */
 
 'use client';
 
 import Link from 'next/link';
 import { useBlocks } from '@/hooks/useBlocks';
+import { useTheme } from '@/components/ui/ThemeProvider';
 import BlockGrid from '@/components/blocks/BlockGrid';
 import FloatingBackground from '@/components/ui/FloatingBackground';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import ThemeToggleButton from '@/components/ui/ThemeToggleButton';
 import { Settings, Sparkles, Github, Twitter, Globe } from 'lucide-react';
 
 export default function HomePage() {
   const { blocks, loading, error } = useBlocks();
+  const { theme, isDarkMode } = useTheme();
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+    <div className={`min-h-screen bg-gradient-to-br ${isDarkMode ? theme.gradientDark : theme.gradient} relative overflow-hidden`}>
       {/* Floating Background Elements */}
       <FloatingBackground />
 
+      {/* Theme Toggle Button */}
+      <ThemeToggleButton />
+
       {/* Header */}
-      <header className="relative">
+      <header className="relative z-10">
         {/* Enhanced Background Pattern */}
         <div className="absolute inset-0 bg-grid-enhanced opacity-5" />
         
@@ -49,8 +55,8 @@ export default function HomePage() {
           <nav className="flex justify-between items-center mb-12">
             <div className="flex items-center space-x-2">
               <div className="relative">
-                <Sparkles className="h-8 w-8 text-amber-500 animate-pulse" />
-                <div className="absolute inset-0 blur-lg bg-amber-500 opacity-50"></div>
+                <Sparkles className="h-8 w-8 animate-pulse" style={{ color: theme.accent }} />
+                <div className="absolute inset-0 blur-lg opacity-50" style={{ backgroundColor: theme.accent }}></div>
               </div>
               <span className="text-2xl font-bold text-gray-900 dark:text-white">Smart Blocks</span>
             </div>
@@ -65,31 +71,14 @@ export default function HomePage() {
           </nav>
 
           {/* Hero Section */}
-          <div className="text-center mb-12 relative">
-            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white mb-6 relative">
-              <span className="relative inline-block">
-                Choose Your
-                <svg className="absolute -bottom-2 left-0 w-full" height="10" viewBox="0 0 200 10">
-                  <path
-                    d="M0,5 Q50,0 100,5 T200,5"
-                    stroke="url(#underline-gradient)"
-                    strokeWidth="3"
-                    fill="none"
-                  />
-                  <defs>
-                    <linearGradient id="underline-gradient" x1="0%" y1="0%" x2="100%" y2="0%">
-                      <stop offset="0%" stopColor="#f59e0b" />
-                      <stop offset="50%" stopColor="#ec4899" />
-                      <stop offset="100%" stopColor="#8b5cf6" />
-                    </linearGradient>
-                  </defs>
-                </svg>
-              </span>
-              <span className="block text-transparent bg-clip-text bg-gradient-to-r from-amber-500 via-pink-500 to-purple-600 text-gradient-animate mt-2">
+          <div className="text-center mb-12 relative z-20">
+            <h1 className="text-5xl md:text-7xl font-bold text-gray-900 dark:text-white">
+              <div className="mb-4">Choose Your</div>
+              <div style={{ color: theme.accent }}>
                 Domain
-              </span>
+              </div>
             </h1>
-            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mb-8">
+            <p className="text-xl text-gray-600 dark:text-gray-300 max-w-3xl mx-auto mt-6 mb-8">
               Discover amazing websites, tools, and resources organized by category. 
               Click any block to explore new digital territories.
             </p>
@@ -97,7 +86,7 @@ export default function HomePage() {
             {/* Animated Stats */}
             <div className="flex flex-wrap justify-center gap-8 text-sm">
               <div className="flex items-center glass-effect px-4 py-2 rounded-full shadow-sm">
-                <div className="w-2 h-2 bg-amber-500 rounded-full mr-2 pulse-new" />
+                <div className="w-2 h-2 rounded-full mr-2 pulse-new" style={{ backgroundColor: theme.accent }} />
                 <span className="text-gray-700 dark:text-gray-300">{blocks.length} Curated Links</span>
               </div>
               <div className="flex items-center glass-effect px-4 py-2 rounded-full shadow-sm">
@@ -138,7 +127,7 @@ export default function HomePage() {
             {/* Brand */}
             <div>
               <div className="flex items-center space-x-2 mb-4">
-                <Sparkles className="h-6 w-6 text-amber-400" />
+                <Sparkles className="h-6 w-6" style={{ color: theme.accent }} />
                 <span className="text-xl font-bold">Smart Blocks</span>
               </div>
               <p className="text-gray-400 text-sm">
@@ -167,9 +156,13 @@ export default function HomePage() {
                 <input
                   type="email"
                   placeholder="Your email"
-                  className="flex-1 px-4 py-2 bg-gray-800 dark:bg-gray-900 border border-gray-700 rounded-l-lg focus:outline-none focus:border-amber-500 transition-colors text-white placeholder-gray-500"
+                  className="flex-1 px-4 py-2 bg-gray-800 dark:bg-gray-900 border border-gray-700 rounded-l-lg focus:outline-none transition-colors text-white placeholder-gray-500"
+                  style={{ borderColor: theme.accent }}
                 />
-                <button className="px-4 py-2 bg-amber-500 hover:bg-amber-600 rounded-r-lg transition-colors interactive-scale text-gray-900 font-medium">
+                <button 
+                  className="px-4 py-2 rounded-r-lg transition-colors interactive-scale text-gray-900 font-medium"
+                  style={{ backgroundColor: theme.accent }}
+                >
                   Subscribe
                 </button>
               </form>

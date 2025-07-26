@@ -1,5 +1,5 @@
 /**
- * BlockCard component - Enhanced with dark mode support
+ * BlockCard component - Enhanced with theme support
  * Shows block information with hover effects and actions
  */
 
@@ -8,6 +8,7 @@
 import { Block } from '@/lib/types';
 import { ExternalLink, Edit, Trash2, Sparkles, Link2 } from 'lucide-react';
 import { useState } from 'react';
+import { useTheme } from '@/components/ui/ThemeProvider';
 
 interface BlockCardProps {
   block: Block;
@@ -41,6 +42,7 @@ export default function BlockCard({
   isNew = false 
 }: BlockCardProps) {
   const [imageError, setImageError] = useState(false);
+  const { theme } = useTheme();
 
   const handleCardClick = () => {
     if (!isAdminMode) {
@@ -62,6 +64,9 @@ export default function BlockCard({
 
   // Generate favicon URL
   const faviconUrl = `https://www.google.com/s2/favicons?domain=${getDomainFromUrl(block.url)}&sz=64`;
+  
+  // Get theme-specific category color
+  const categoryColor = theme.category[block.category as keyof typeof theme.category] || theme.category['Technology'];
 
   return (
     <div
@@ -75,9 +80,9 @@ export default function BlockCard({
       `}
       onClick={handleCardClick}
     >
-      {/* Color Header with Glow Effect */}
+      {/* Color Header with Theme Color */}
       <div className={`
-        h-32 ${block.color} color-glow relative overflow-hidden
+        h-32 ${categoryColor} color-glow relative overflow-hidden
         transition-all duration-300 group-hover:h-36
       `}>
         {/* Animated Pattern Overlay */}
@@ -114,7 +119,7 @@ export default function BlockCard({
 
         {/* New Badge */}
         {isNew && (
-          <div className="absolute top-3 right-3 flex items-center space-x-1 bg-yellow-400 text-yellow-900 px-2 py-1 rounded-full animate-pulse">
+          <div className="absolute top-3 right-3 flex items-center space-x-1 text-yellow-900 px-2 py-1 rounded-full animate-pulse" style={{ backgroundColor: theme.accent }}>
             <Sparkles className="h-3 w-3" />
             <span className="text-xs font-bold">NEW</span>
           </div>
@@ -179,9 +184,14 @@ export default function BlockCard({
         )}
       </div>
 
-      {/* Hover Gradient Border Effect */}
+      {/* Hover Gradient Border Effect with Theme Colors */}
       <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div className="absolute inset-0 bg-gradient-to-r from-blue-500/10 via-purple-500/10 to-pink-500/10 dark:from-blue-400/20 dark:via-purple-400/20 dark:to-pink-400/20" />
+        <div 
+          className="absolute inset-0"
+          style={{
+            background: `linear-gradient(45deg, ${theme.accent}20, ${theme.accent}10, ${theme.accent}20)`
+          }}
+        />
       </div>
     </div>
   );

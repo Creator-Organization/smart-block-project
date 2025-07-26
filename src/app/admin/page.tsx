@@ -1,6 +1,6 @@
 /**
- * Admin Dashboard Page - Polished Version
- * Full admin interface with dark mode and enhanced styling
+ * Admin Dashboard Page - With Theme Support
+ * Full admin interface with color themes
  */
 
 'use client';
@@ -8,6 +8,7 @@
 import { useState } from 'react';
 import Link from 'next/link';
 import { useBlocks } from '@/hooks/useBlocks';
+import { useTheme } from '@/components/ui/ThemeProvider';
 import { Block, CreateBlockRequest, UpdateBlockRequest } from '@/lib/types';
 import AdminPanel from '@/components/admin/AdminPanel';
 import AddBlockModal from '@/components/admin/AddBlockModal';
@@ -15,10 +16,12 @@ import EditBlockModal from '@/components/admin/EditBlockModal';
 import BlockGrid from '@/components/blocks/BlockGrid';
 import FloatingBackground from '@/components/ui/FloatingBackground';
 import ThemeToggle from '@/components/ui/ThemeToggle';
+import ThemeToggleButton from '@/components/ui/ThemeToggleButton';
 import { ArrowLeft, Sparkles, Plus, Grid3X3, BarChart3, Activity } from 'lucide-react';
 
 export default function AdminPage() {
   const { blocks, loading, error, totalBlocks, createBlock, updateBlock, deleteBlock } = useBlocks();
+  const { theme, isDarkMode } = useTheme();
   
   // Modal states
   const [showAddModal, setShowAddModal] = useState(false);
@@ -60,9 +63,12 @@ export default function AdminPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-amber-50 to-yellow-50 dark:from-gray-900 dark:via-gray-800 dark:to-gray-900 relative overflow-hidden">
+    <div className={`min-h-screen bg-gradient-to-br ${isDarkMode ? theme.gradientDark : theme.gradient} relative overflow-hidden`}>
       {/* Floating Background Elements */}
       <FloatingBackground />
+
+      {/* Theme Toggle Button */}
+      <ThemeToggleButton />
 
       {/* Header */}
       <header className="relative bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700">
@@ -80,7 +86,7 @@ export default function AdminPage() {
               <div className="h-6 w-px bg-gray-300 dark:bg-gray-600" />
               
               <div className="flex items-center space-x-2">
-                <Sparkles className="h-6 w-6 text-amber-500" />
+                <Sparkles className="h-6 w-6" style={{ color: theme.accent }} />
                 <span className="text-xl font-bold text-gray-900 dark:text-white">Smart Blocks Admin</span>
               </div>
             </div>
@@ -89,7 +95,8 @@ export default function AdminPage() {
             <div className="flex items-center space-x-4">
               <button
                 onClick={() => setShowAddModal(true)}
-                className="btn-3d flex items-center px-4 py-2 bg-amber-500 hover:bg-amber-600 text-white rounded-lg transition-colors shadow-md interactive-scale"
+                className="btn-3d flex items-center px-4 py-2 text-white rounded-lg transition-colors shadow-md interactive-scale"
+                style={{ backgroundColor: theme.accent }}
               >
                 <Plus className="h-4 w-4 mr-2" />
                 Add Block
@@ -110,8 +117,8 @@ export default function AdminPage() {
                 <p className="text-sm text-gray-600 dark:text-gray-400">Total Blocks</p>
                 <p className="text-2xl font-bold text-gray-900 dark:text-white">{totalBlocks}</p>
               </div>
-              <div className="h-12 w-12 bg-amber-100 dark:bg-amber-900/20 rounded-full flex items-center justify-center">
-                <Grid3X3 className="h-6 w-6 text-amber-600 dark:text-amber-400" />
+              <div className="h-12 w-12 rounded-full flex items-center justify-center" style={{ backgroundColor: `${theme.accent}20` }}>
+                <Grid3X3 className="h-6 w-6" style={{ color: theme.accent }} />
               </div>
             </div>
           </div>
@@ -155,10 +162,16 @@ export default function AdminPage() {
           totalBlocks={totalBlocks}
           onAddNew={() => setShowAddModal(true)}
         >
-          {/* Admin Instructions */}
-          <div className="bg-amber-50 dark:bg-amber-900/10 border border-amber-200 dark:border-amber-800 rounded-lg p-4 mb-8 glass-effect">
-            <h3 className="font-medium text-amber-900 dark:text-amber-300 mb-2">Admin Features</h3>
-            <ul className="text-sm text-amber-800 dark:text-amber-400 space-y-1">
+          {/* Admin Instructions with Theme Color */}
+          <div 
+            className="border rounded-lg p-4 mb-8 glass-effect"
+            style={{ 
+              backgroundColor: `${theme.accent}10`,
+              borderColor: `${theme.accent}40`
+            }}
+          >
+            <h3 className="font-medium mb-2" style={{ color: theme.accent }}>Admin Features</h3>
+            <ul className="text-sm space-y-1" style={{ color: `${theme.accent}dd` }}>
               <li>• Drag and drop blocks to reorder them</li>
               <li>• Click on any block to edit or delete</li>
               <li>• Use the search and filter options to find specific blocks</li>
