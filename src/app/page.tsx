@@ -12,7 +12,7 @@ import BlockGrid from '@/components/blocks/BlockGrid';
 import FloatingBackground from '@/components/ui/FloatingBackground';
 import ThemeToggle from '@/components/ui/ThemeToggle';
 import ThemeToggleButton from '@/components/ui/ThemeToggleButton';
-import { Settings, Sparkles, Github, Twitter, Globe } from 'lucide-react';
+import { Sparkles, Github, Twitter, Globe } from 'lucide-react';
 
 export default function HomePage() {
   const { blocks, loading, error } = useBlocks();
@@ -52,7 +52,7 @@ export default function HomePage() {
           </div>
 
           {/* Navigation */}
-          <nav className="flex justify-between items-center mb-12">
+          <nav className="flex justify-center items-center mb-12">
             <div className="flex items-center space-x-2">
               <div className="relative">
                 <Sparkles className="h-8 w-8 animate-pulse" style={{ color: theme.accent }} />
@@ -60,14 +60,6 @@ export default function HomePage() {
               </div>
               <span className="text-2xl font-bold text-gray-900 dark:text-white">Smart Blocks</span>
             </div>
-            
-            <Link
-              href="/admin"
-              className="btn-3d flex items-center px-4 py-2 bg-gray-900 dark:bg-gray-700 text-white rounded-lg hover:bg-gray-800 dark:hover:bg-gray-600 transition-colors shadow-md interactive-scale"
-            >
-              <Settings className="h-4 w-4 mr-2" />
-              Admin
-            </Link>
           </nav>
 
           {/* Hero Section */}
