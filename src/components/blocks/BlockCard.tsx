@@ -1,13 +1,11 @@
 /**
- * BlockCard component - Enhanced with theme support
- * Shows block information with hover effects and actions
+ * BlockCard component - With background color broadcast on hover
  */
 
 'use client';
 
 import { Block } from '@/lib/types';
-import { ExternalLink, Edit, Trash2, Sparkles, Link2 } from 'lucide-react';
-import { useState } from 'react';
+import { Edit, Trash2, ArrowUpRight } from 'lucide-react';
 import { useTheme } from '@/components/ui/ThemeProvider';
 
 interface BlockCardProps {
@@ -16,9 +14,9 @@ interface BlockCardProps {
   onEdit?: (block: Block) => void;
   onDelete?: (id: number) => void;
   isNew?: boolean;
+  onHover?: (color: string | null) => void;
 }
 
-// Helper function to get domain from URL
 const getDomainFromUrl = (url: string): string => {
   try {
     const urlObj = new URL(url);
@@ -28,20 +26,14 @@ const getDomainFromUrl = (url: string): string => {
   }
 };
 
-// Helper function to truncate text
-const truncateText = (text: string, maxLength: number): string => {
-  if (text.length <= maxLength) return text;
-  return text.substring(0, maxLength) + '...';
-};
-
 export default function BlockCard({ 
   block, 
   isAdminMode = false, 
   onEdit, 
   onDelete,
-  isNew = false 
+  isNew = false,
+  onHover
 }: BlockCardProps) {
-  const [imageError, setImageError] = useState(false);
   const { theme } = useTheme();
 
   const handleCardClick = () => {
@@ -62,136 +54,110 @@ export default function BlockCard({
     }
   };
 
-  // Generate favicon URL
-  const faviconUrl = `https://www.google.com/s2/favicons?domain=${getDomainFromUrl(block.url)}&sz=64`;
-  
-  // Get theme-specific category color
-  const categoryColor = theme.category[block.category as keyof typeof theme.category] || theme.category['Technology'];
+  const handleMouseEnter = () => {
+    onHover?.(block.color);
+  };
+
+  const handleMouseLeave = () => {
+    onHover?.(null);
+  };
 
   return (
     <div
       className={`
-        block-card gradient-border card-shine group relative 
-        bg-white dark:bg-gray-800 rounded-lg
-        transition-all duration-300 transform
-        border border-gray-200 dark:border-gray-700 overflow-hidden
-        ${!isAdminMode ? 'cursor-pointer hover:border-transparent' : ''}
-        ${isNew ? 'pulse-new' : ''}
+        group relative h-full
+        bg-white dark:bg-gray-900
+        rounded-3xl overflow-hidden
+        transition-all duration-500 ease-out
+        ${!isAdminMode ? 'cursor-pointer hover:-translate-y-3 hover:shadow-2xl' : ''}
+        border-2 border-gray-200 dark:border-gray-800
       `}
+      style={{
+        boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03)'
+      }}
       onClick={handleCardClick}
+      onMouseEnter={handleMouseEnter}
+      onMouseLeave={handleMouseLeave}
     >
-      {/* Color Header with Theme Color */}
-      <div className={`
-        h-32 ${categoryColor} color-glow relative overflow-hidden
-        transition-all duration-300 group-hover:h-36
-      `}>
-        {/* Animated Pattern Overlay */}
-        <div className="absolute inset-0 opacity-20">
-          <div className="absolute inset-0 bg-gradient-to-br from-white/20 to-transparent dark:from-white/10" />
-          <svg className="absolute inset-0 w-full h-full" xmlns="http://www.w3.org/2000/svg">
-            <defs>
-              <pattern id={`dots-${block.id}`} x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-                <circle cx="2" cy="2" r="1" fill="white" opacity="0.3" />
-              </pattern>
-            </defs>
-            <rect width="100%" height="100%" fill={`url(#dots-${block.id})`} />
-          </svg>
-        </div>
+      {/* Color fill from left side on hover - with low opacity */}
+      <div 
+        className="absolute left-0 top-0 bottom-0 w-0 transition-all duration-500 rounded-l-3xl group-hover:w-full group-hover:rounded-3xl opacity-10"
+        style={{
+          backgroundColor: block.color
+        }}
+      />
+      
+      {/* Border overlay that appears on hover */}
+      <div 
+        className="absolute inset-0 rounded-3xl opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none"
+        style={{
+          border: `4px solid ${block.color}`,
+          boxShadow: `0 0 20px ${block.color}40`
+        }}
+      />
 
-        {/* Favicon Display */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-          {!imageError ? (
-            <img 
-              src={faviconUrl} 
-              alt=""
-              className="w-16 h-16 rounded-lg shadow-lg"
-              onError={() => setImageError(true)}
-            />
-          ) : (
-            <Link2 className="w-16 h-16 text-white/50" />
+      <div className="relative p-10 z-10">
+        {/* Header with arrow */}
+        <div className="flex items-start justify-between mb-8">
+          <div className="flex-1">
+            <h3 className="text-3xl font-bold text-gray-900 dark:text-white leading-tight mb-4">
+              {block.title}
+            </h3>
+          </div>
+
+          {!isAdminMode && (
+            <div className="ml-4 opacity-0 group-hover:opacity-100 transition-all duration-300 transform group-hover:translate-x-1 group-hover:-translate-y-1">
+              <div 
+                className="w-10 h-10 rounded-full flex items-center justify-center transition-colors"
+                style={{ backgroundColor: `${block.color}30` }}
+              >
+                <ArrowUpRight className="w-5 h-5" style={{ color: block.color }} />
+              </div>
+            </div>
           )}
         </div>
 
-        {/* Category Badge */}
-        <div className="absolute top-3 left-3 glass-effect px-3 py-1 rounded-full">
-          <span className="text-xs font-medium text-gray-700 dark:text-gray-200">{block.category}</span>
-        </div>
-
-        {/* New Badge */}
-        {isNew && (
-          <div className="absolute top-3 right-3 flex items-center space-x-1 text-yellow-900 px-2 py-1 rounded-full animate-pulse" style={{ backgroundColor: theme.accent }}>
-            <Sparkles className="h-3 w-3" />
-            <span className="text-xs font-bold">NEW</span>
-          </div>
-        )}
-
-        {/* Hover Icon */}
-        {!isAdminMode && (
-          <div className="absolute bottom-3 right-3 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full p-2">
-              <ExternalLink className="h-5 w-5 text-gray-700 dark:text-gray-300" />
-            </div>
-          </div>
-        )}
-      </div>
-
-      {/* Content Section */}
-      <div className="p-5">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-2 group-hover:text-gradient-animate transition-all">
-          {block.title}
-        </h3>
-        
+        {/* Description */}
         {block.description && (
-          <p className="text-sm text-gray-600 dark:text-gray-400 mb-3 line-clamp-2">
-            {truncateText(block.description, 100)}
+          <p className="text-base text-gray-600 dark:text-gray-400 leading-relaxed mb-8 min-h-[3rem]">
+            {block.description}
           </p>
         )}
 
-        <div className="flex items-center justify-between">
-          <div className="flex items-center text-xs text-gray-500 dark:text-gray-500">
-            <div className="w-4 h-4 rounded-full bg-gray-200 dark:bg-gray-700 mr-2 flex items-center justify-center">
-              <Link2 className="h-2.5 w-2.5" />
-            </div>
-            <span className="truncate">{getDomainFromUrl(block.url)}</span>
-          </div>
-
-          {/* Visit count or other metrics */}
-          <div className="text-xs text-gray-400 dark:text-gray-600">
-            <span className="opacity-0 group-hover:opacity-100 transition-opacity">
-              Click to visit →
+        {/* Domain */}
+        <div className="flex items-center justify-between pt-6 border-t border-gray-100 dark:border-gray-800">
+          <span className="text-sm font-medium text-gray-600 dark:text-gray-400 font-mono">
+            {getDomainFromUrl(block.url)}
+          </span>
+          
+          {!isAdminMode && (
+            <span 
+              className="text-sm font-bold opacity-0 group-hover:opacity-100 transition-opacity text-gray-900 dark:text-white"
+            >
+              Visit →
             </span>
-          </div>
+          )}
         </div>
 
         {/* Admin Actions */}
         {isAdminMode && (
-          <div className="flex items-center space-x-2 mt-4 pt-4 border-t border-gray-100 dark:border-gray-700">
+          <div className="flex items-center space-x-3 mt-6 pt-6 border-t border-gray-200 dark:border-gray-700">
             <button
               onClick={handleEdit}
-              className="flex-1 flex items-center justify-center px-3 py-2 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-lg hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-colors interactive-scale"
+              className="flex-1 flex items-center justify-center px-4 py-3 bg-blue-50 dark:bg-blue-900/20 text-blue-600 dark:text-blue-400 rounded-2xl hover:bg-blue-100 dark:hover:bg-blue-900/30 transition-all font-semibold"
             >
-              <Edit className="h-4 w-4 mr-1" />
+              <Edit className="h-4 w-4 mr-2" />
               Edit
             </button>
             <button
               onClick={handleDelete}
-              className="flex-1 flex items-center justify-center px-3 py-2 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-lg hover:bg-red-100 dark:hover:bg-red-900/30 transition-colors interactive-scale"
+              className="flex-1 flex items-center justify-center px-4 py-3 bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 rounded-2xl hover:bg-red-100 dark:hover:bg-red-900/30 transition-all font-semibold"
             >
-              <Trash2 className="h-4 w-4 mr-1" />
+              <Trash2 className="h-4 w-4 mr-2" />
               Delete
             </button>
           </div>
         )}
-      </div>
-
-      {/* Hover Gradient Border Effect with Theme Colors */}
-      <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none">
-        <div 
-          className="absolute inset-0"
-          style={{
-            background: `linear-gradient(45deg, ${theme.accent}20, ${theme.accent}10, ${theme.accent}20)`
-          }}
-        />
       </div>
     </div>
   );
